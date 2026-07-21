@@ -98,8 +98,15 @@ ignore:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: landscape
+theme_config:
+  menu:
+    Home: /
+    激活教程: /2026/07/22/giffgaff-教程/
+    保号助手: /gapa/
+  banner:
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: ''
+
