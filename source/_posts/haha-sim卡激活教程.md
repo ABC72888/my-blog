@@ -1,6 +1,7 @@
 ---
 title: Haha SIM 卡激活使用教程
 date: 2026-07-21 18:00:00
+permalink: haha/
 tags:
   - Haha
   - SIM

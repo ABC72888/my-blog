@@ -1,6 +1,7 @@
 ﻿---
 title: giffgaff 保号助手 - 极简流量消耗工具
 date: 2026-07-21 16:02:37
+permalink: keeper/
 tags:
   - giffgaff
   - 保号

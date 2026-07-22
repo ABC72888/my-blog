@@ -1,6 +1,7 @@
 ---
 title: 英国实体 SIM 卡 giffgaff 激活使用教程
 date: 2026-07-22 00:00:00
+permalink: giffgaff/
 tags:
   - giffgaff
   - SIM
