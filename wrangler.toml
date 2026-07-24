@@ -1,0 +1,8 @@
+name = "my-blog"
+compatibility_date = "2026-07-20"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "orders-db"
+database_id = "23b86028-738c-471e-b35b-23fdad08d851"
