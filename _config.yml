@@ -30,6 +30,7 @@ code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
   - gapa/**
+  - order/**
   - query/**
   - address/**
   - order-admin/**

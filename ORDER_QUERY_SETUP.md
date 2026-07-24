@@ -4,6 +4,7 @@
 
 ## 页面地址
 
+- 订单服务页：`https://sim.885397.xyz/order/`
 - 客户查询页：`https://sim.885397.xyz/query/`
 - 客户填写地址页：`https://sim.885397.xyz/address/`
 - 管理页面：`https://sim.885397.xyz/order-admin/`
