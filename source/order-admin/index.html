@@ -34,7 +34,7 @@
     }
 
     .nav, main {
-      width: min(1040px, calc(100% - 32px));
+      width: min(1180px, calc(100% - 32px));
       margin: 0 auto;
     }
 
@@ -53,10 +53,15 @@
       white-space: nowrap;
     }
 
-    .home {
+    .links {
+      display: flex;
+      gap: 14px;
+      font-size: 14px;
+    }
+
+    .links a {
       color: var(--muted);
       text-decoration: none;
-      font-size: 14px;
     }
 
     main {
@@ -92,6 +97,8 @@
       gap: 14px;
     }
 
+    .full { grid-column: 1 / -1; }
+
     label {
       display: block;
       margin-bottom: 8px;
@@ -111,7 +118,7 @@
     }
 
     input, select { height: 42px; }
-    textarea { min-height: 74px; padding-top: 10px; resize: vertical; }
+    textarea { min-height: 78px; padding-top: 10px; resize: vertical; line-height: 1.6; }
 
     input:focus, textarea:focus, select:focus {
       border-color: var(--primary);
@@ -126,10 +133,10 @@
     }
 
     button {
-      height: 40px;
+      min-height: 38px;
       border: 0;
       border-radius: 6px;
-      padding: 0 16px;
+      padding: 0 14px;
       font-size: 14px;
       font-weight: 700;
       color: #fff;
@@ -159,6 +166,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
+      min-width: 1060px;
     }
 
     th, td {
@@ -182,6 +190,7 @@
     }
 
     .toolbar input { max-width: 360px; }
+    .muted { color: var(--muted); }
 
     @media (max-width: 760px) {
       .grid { grid-template-columns: 1fr; }
@@ -195,14 +204,17 @@
   <header>
     <nav class="nav">
       <a class="brand" href="/">海外实体卡激活教程</a>
-      <a class="home" href="/query/">客户查询页</a>
+      <div class="links">
+        <a href="/address/">填写地址页</a>
+        <a href="/query/">客户查询页</a>
+      </div>
     </nav>
   </header>
 
   <main>
     <section class="panel">
       <h1>订单管理</h1>
-      <p>这个页面不会公开显示在菜单里，但必须输入管理密码才能保存和查看订单。</p>
+      <p>客户提交地址后会出现在下方列表。发货后把快递单号补进去，客户就能用订单号查询。</p>
 
       <div>
         <label for="adminToken">管理密码</label>
@@ -223,7 +235,7 @@
         </div>
         <div>
           <label for="trackingNo">快递单号</label>
-          <input id="trackingNo" autocomplete="off" placeholder="例如 773123456789">
+          <input id="trackingNo" autocomplete="off" placeholder="未发货可先不填">
         </div>
         <div>
           <label for="carrier">快递公司</label>
@@ -232,8 +244,20 @@
           </select>
         </div>
         <div>
+          <label for="recipientName">收件人</label>
+          <input id="recipientName" autocomplete="off" placeholder="客户提交后会自动带入">
+        </div>
+        <div>
+          <label for="recipientPhone">手机号</label>
+          <input id="recipientPhone" autocomplete="off" placeholder="客户提交后会自动带入">
+        </div>
+        <div>
           <label for="note">备注</label>
           <input id="note" autocomplete="off" placeholder="可不填">
+        </div>
+        <div class="full">
+          <label for="recipientAddress">收货地址</label>
+          <textarea id="recipientAddress" placeholder="客户提交后会自动带入"></textarea>
         </div>
       </div>
       <div class="actions">
@@ -254,15 +278,18 @@
           <thead>
             <tr>
               <th>订单号</th>
-              <th>快递公司</th>
+              <th>状态</th>
               <th>快递单号</th>
+              <th>收件人</th>
+              <th>手机号</th>
+              <th>收货地址</th>
               <th>备注</th>
               <th>更新时间</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody id="ordersBody">
-            <tr><td colspan="6">输入管理密码后点击查询。</td></tr>
+            <tr><td colspan="9">输入管理密码后点击查询。</td></tr>
           </tbody>
         </table>
       </div>
@@ -273,6 +300,7 @@
     const tokenInput = document.querySelector('#adminToken');
     const message = document.querySelector('#message');
     const ordersBody = document.querySelector('#ordersBody');
+    let latestOrders = [];
 
     tokenInput.value = localStorage.getItem('orderAdminToken') || '';
 
@@ -319,7 +347,24 @@
     function resetForm() {
       document.querySelector('#orderNo').value = '';
       document.querySelector('#trackingNo').value = '';
+      document.querySelector('#recipientName').value = '';
+      document.querySelector('#recipientPhone').value = '';
+      document.querySelector('#recipientAddress').value = '';
       document.querySelector('#note').value = '';
+    }
+
+    function fillForm(index) {
+      const item = latestOrders[index];
+      if (!item) return;
+
+      document.querySelector('#orderNo').value = item.order_no || '';
+      document.querySelector('#trackingNo').value = item.tracking_no || '';
+      document.querySelector('#carrier').value = item.carrier || 'sto';
+      document.querySelector('#recipientName').value = item.recipient_name || '';
+      document.querySelector('#recipientPhone').value = item.recipient_phone || '';
+      document.querySelector('#recipientAddress').value = item.recipient_address || '';
+      document.querySelector('#note').value = item.note || '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function saveOrder() {
@@ -327,11 +372,14 @@
         orderNo: document.querySelector('#orderNo').value.trim(),
         trackingNo: document.querySelector('#trackingNo').value.trim(),
         carrier: document.querySelector('#carrier').value,
+        recipientName: document.querySelector('#recipientName').value.trim(),
+        recipientPhone: document.querySelector('#recipientPhone').value.trim(),
+        recipientAddress: document.querySelector('#recipientAddress').value.trim(),
         note: document.querySelector('#note').value.trim()
       };
 
       if (!token()) return showMessage('bad', '请先输入管理密码。');
-      if (!body.orderNo || !body.trackingNo) return showMessage('bad', '订单号和快递单号都要填写。');
+      if (!body.orderNo) return showMessage('bad', '订单号要填写。');
 
       const response = await fetch('/api/admin/orders', {
         method: 'POST',
@@ -349,7 +397,7 @@
 
     async function loadOrders() {
       if (!token()) {
-        ordersBody.innerHTML = '<tr><td colspan="6">请先输入管理密码。</td></tr>';
+        ordersBody.innerHTML = '<tr><td colspan="9">请先输入管理密码。</td></tr>';
         return;
       }
 
@@ -360,25 +408,36 @@
       const payload = await response.json();
 
       if (!payload.ok) {
-        ordersBody.innerHTML = `<tr><td colspan="6">${payload.message || '读取失败。'}</td></tr>`;
+        ordersBody.innerHTML = `<tr><td colspan="9">${escapeHtml(payload.message || '读取失败。')}</td></tr>`;
         return;
       }
 
-      if (!payload.data.length) {
-        ordersBody.innerHTML = '<tr><td colspan="6">暂无订单。</td></tr>';
+      latestOrders = payload.data || [];
+
+      if (!latestOrders.length) {
+        ordersBody.innerHTML = '<tr><td colspan="9">暂无订单。</td></tr>';
         return;
       }
 
-      ordersBody.innerHTML = payload.data.map((item) => `
-        <tr>
-          <td>${escapeHtml(item.order_no)}</td>
-          <td>${escapeHtml(carrierName(item.carrier))}</td>
-          <td>${escapeHtml(item.tracking_no)}</td>
-          <td>${escapeHtml(item.note || '')}</td>
-          <td>${escapeHtml(item.updated_at || '')}</td>
-          <td><button class="danger" type="button" onclick="deleteOrder('${encodeURIComponent(item.order_no)}')">删除</button></td>
-        </tr>
-      `).join('');
+      ordersBody.innerHTML = latestOrders.map((item, index) => {
+        const shipped = Boolean(String(item.tracking_no || '').trim());
+        return `
+          <tr>
+            <td>${escapeHtml(item.order_no)}</td>
+            <td>${shipped ? '已发货' : '<span class="muted">待发货</span>'}</td>
+            <td>${escapeHtml(item.tracking_no || '')}</td>
+            <td>${escapeHtml(item.recipient_name || '')}</td>
+            <td>${escapeHtml(item.recipient_phone || '')}</td>
+            <td>${escapeHtml(item.recipient_address || '')}</td>
+            <td>${escapeHtml(item.note || '')}</td>
+            <td>${escapeHtml(item.updated_at || '')}</td>
+            <td>
+              <button class="secondary" type="button" onclick="fillForm(${index})">编辑</button>
+              <button class="danger" type="button" onclick="deleteOrder('${encodeURIComponent(item.order_no)}')">删除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     async function deleteOrder(encodedOrderNo) {

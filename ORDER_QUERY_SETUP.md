@@ -5,6 +5,7 @@
 ## 页面地址
 
 - 客户查询页：`https://sim.885397.xyz/query/`
+- 客户填写地址页：`https://sim.885397.xyz/address/`
 - 管理页面：`https://sim.885397.xyz/order-admin/`
 
 管理页面不会显示在博客菜单里，但知道地址的人可以打开页面；真正的保护是 Cloudflare 环境变量 `ADMIN_TOKEN`。
@@ -109,3 +110,11 @@ https://sim.885397.xyz/query/
 ```
 
 输入订单号后，就能看到对应的申通快递单号。
+
+客户也可以先打开：
+
+```text
+https://sim.885397.xyz/address/
+```
+
+提交订单号、收件人、手机号和收货地址。后台发货后补快递单号，客户再用订单号查询。

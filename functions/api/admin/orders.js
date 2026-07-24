@@ -36,19 +36,54 @@ function assertAdmin(request, env) {
   return { ok: true };
 }
 
+async function ensureCustomerColumns(env) {
+  try {
+    await env.DB.prepare('SELECT recipient_name, recipient_phone, recipient_address FROM orders LIMIT 1').first();
+    return;
+  } catch {
+    // Databases created before address collection do not have these columns yet.
+  }
+
+  for (const sql of [
+    'ALTER TABLE orders ADD COLUMN recipient_name TEXT',
+    'ALTER TABLE orders ADD COLUMN recipient_phone TEXT',
+    'ALTER TABLE orders ADD COLUMN recipient_address TEXT',
+  ]) {
+    try {
+      await env.DB.prepare(sql).run();
+    } catch (error) {
+      if (!String(error?.message || '').toLowerCase().includes('duplicate column')) {
+        throw error;
+      }
+    }
+  }
+}
+
 function validateOrder(input) {
   const orderNo = String(input.orderNo || '').trim();
   const trackingNo = String(input.trackingNo || '').trim();
   const carrier = String(input.carrier || 'sto').trim() || 'sto';
+  const recipientName = String(input.recipientName || '').trim();
+  const recipientPhone = String(input.recipientPhone || '').trim();
+  const recipientAddress = String(input.recipientAddress || '').trim();
   const note = String(input.note || '').trim();
   const orderKey = normalizeOrderNo(orderNo);
 
   if (!orderKey) return { ok: false, message: '订单号不能为空。' };
-  if (!trackingNo) return { ok: false, message: '快递单号不能为空。' };
   if (orderKey.length > MAX_ORDER_LENGTH) return { ok: false, message: '订单号太长。' };
   if (trackingNo.length > MAX_TRACKING_LENGTH) return { ok: false, message: '快递单号太长。' };
 
-  return { ok: true, orderNo, orderKey, trackingNo, carrier, note };
+  return {
+    ok: true,
+    orderNo,
+    orderKey,
+    trackingNo,
+    carrier,
+    recipientName,
+    recipientPhone,
+    recipientAddress,
+    note,
+  };
 }
 
 export async function onRequestGet(context) {
@@ -58,16 +93,25 @@ export async function onRequestGet(context) {
   const admin = assertAdmin(request, env);
   if (!admin.ok) return admin.response;
 
+  await ensureCustomerColumns(env);
+
   const url = new URL(request.url);
   const q = normalizeOrderNo(url.searchParams.get('q') || '');
-  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 20), 1), 100);
+  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 50), 1), 100);
 
   const stmt = q
     ? env.DB.prepare(
-        'SELECT order_no, tracking_no, carrier, note, updated_at FROM orders WHERE order_no_key LIKE ? ORDER BY updated_at DESC LIMIT ?'
+        `SELECT order_no, tracking_no, carrier, recipient_name, recipient_phone, recipient_address, note, updated_at
+         FROM orders
+         WHERE order_no_key LIKE ?
+         ORDER BY updated_at DESC
+         LIMIT ?`
       ).bind(`%${q}%`, limit)
     : env.DB.prepare(
-        'SELECT order_no, tracking_no, carrier, note, updated_at FROM orders ORDER BY updated_at DESC LIMIT ?'
+        `SELECT order_no, tracking_no, carrier, recipient_name, recipient_phone, recipient_address, note, updated_at
+         FROM orders
+         ORDER BY updated_at DESC
+         LIMIT ?`
       ).bind(limit);
 
   const result = await stmt.all();
@@ -91,16 +135,33 @@ export async function onRequestPost(context) {
   const item = validateOrder(body);
   if (!item.ok) return json({ ok: false, message: item.message }, 400);
 
+  await ensureCustomerColumns(env);
+
   await env.DB.prepare(
-    `INSERT INTO orders (order_no, order_no_key, tracking_no, carrier, note, updated_at)
-     VALUES (?, ?, ?, ?, ?, datetime('now'))
+    `INSERT INTO orders (
+       order_no, order_no_key, tracking_no, carrier,
+       recipient_name, recipient_phone, recipient_address, note, updated_at
+     )
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
      ON CONFLICT(order_no_key) DO UPDATE SET
        order_no = excluded.order_no,
        tracking_no = excluded.tracking_no,
        carrier = excluded.carrier,
+       recipient_name = excluded.recipient_name,
+       recipient_phone = excluded.recipient_phone,
+       recipient_address = excluded.recipient_address,
        note = excluded.note,
        updated_at = datetime('now')`
-  ).bind(item.orderNo, item.orderKey, item.trackingNo, item.carrier, item.note).run();
+  ).bind(
+    item.orderNo,
+    item.orderKey,
+    item.trackingNo,
+    item.carrier,
+    item.recipientName,
+    item.recipientPhone,
+    item.recipientAddress,
+    item.note
+  ).run();
 
   return json({ ok: true, message: '保存成功。' });
 }

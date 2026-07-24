@@ -300,6 +300,22 @@
 
         const data = payload.data;
         latestTrackingNo = data.trackingNo;
+
+        if (data.status === 'pending' || !data.trackingNo) {
+          showResult(`
+            <h1 class="waybill">订单号: ${escapeHtml(data.orderNo)}</h1>
+            <div class="summary">
+              <div class="places">
+                <div>订单状态<strong>待发货</strong></div>
+              </div>
+              <div>
+                <div class="notice">你的收货地址已经提交成功，请等待发货。发货后再来查询，就能看到快递单号。</div>
+              </div>
+            </div>
+          `);
+          return;
+        }
+
         const trackUrl = stoTrackUrl(data.trackingNo);
 
         showResult(`

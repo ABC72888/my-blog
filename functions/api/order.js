@@ -74,12 +74,16 @@ export async function onRequestGet(context) {
     return json({ ok: false, message: '没有查到这个订单号，请检查是否输入正确。' }, 404);
   }
 
+  const trackingNo = String(order.tracking_no || '').trim();
+
   return json({
     ok: true,
     data: {
       orderNo: order.order_no,
-      trackingNo: order.tracking_no,
+      trackingNo,
       carrier: order.carrier || 'sto',
+      status: trackingNo ? 'shipped' : 'pending',
+      message: trackingNo ? '已发货。' : '地址已提交，等待发货。',
       updatedAt: order.updated_at,
     },
   });
