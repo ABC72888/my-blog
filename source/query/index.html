@@ -14,7 +14,6 @@
       --page: #f5f6f8;
       --orange: #f06a00;
       --orange-dark: #d95f00;
-      --green: #1fb955;
       --bad: #b42318;
     }
 
@@ -36,9 +35,6 @@
     main {
       width: min(980px, calc(100% - 28px));
       margin: -20px auto 56px;
-    }
-
-    .panel {
       background: var(--panel);
       box-shadow: 0 10px 30px rgba(20, 28, 42, .08);
     }
@@ -90,18 +86,23 @@
       font-weight: 500;
     }
 
-    button {
+    button, .track-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       height: 42px;
       border: 0;
       border-radius: 2px;
       padding: 0 26px;
       color: #fff;
       background: var(--orange);
+      font-size: 14px;
       font-weight: 700;
+      text-decoration: none;
       cursor: pointer;
     }
 
-    button:hover { background: var(--orange-dark); }
+    button:hover, .track-link:hover { background: var(--orange-dark); }
     button:disabled { opacity: .65; cursor: not-allowed; }
 
     .recent {
@@ -150,88 +151,37 @@
       margin-top: 2px;
     }
 
-    .timeline {
-      position: relative;
-      display: grid;
-      gap: 18px;
-      padding-left: 30px;
-      border-left: 2px solid #d8dde5;
-    }
-
-    .trace {
-      position: relative;
-    }
-
-    .trace::before {
-      content: "";
-      position: absolute;
-      left: -37px;
-      top: 2px;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: #c7ccd4;
-      border: 4px solid #fff;
-      box-shadow: 0 0 0 1px #c7ccd4;
-    }
-
-    .trace:first-child::before {
-      background: var(--green);
-      box-shadow: 0 0 0 1px var(--green);
-    }
-
-    .badge {
-      display: inline-block;
-      margin-right: 8px;
-      padding: 3px 6px;
-      border-radius: 3px;
-      color: #fff;
-      background: var(--green);
-      font-size: 12px;
-      font-weight: 800;
-      vertical-align: 2px;
-    }
-
-    .trace-text {
-      color: #1f2937;
-      font-size: 15px;
-      font-weight: 650;
+    .notice {
+      padding: 18px;
+      border-left: 3px solid var(--orange);
+      background: #fff7ed;
+      color: #394150;
       line-height: 1.8;
     }
 
-    .trace-time {
-      margin-top: 4px;
-      color: #5f6876;
-      font-size: 13px;
-      font-weight: 650;
-    }
-
-    .empty, .error {
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 6px;
-      line-height: 1.7;
-    }
-
-    .empty {
-      color: #606978;
-      background: #f3f5f8;
-    }
-
-    .error {
-      color: var(--bad);
-      background: #fff6f5;
-      border: 1px solid rgba(180, 35, 24, .16);
     }
 
     .copy {
-      margin-top: 18px;
-      height: 38px;
-      padding: 0 18px;
+      height: 42px;
       background: #1f2937;
     }
 
     .copy:hover { background: #111827; }
+
+    .error {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 6px;
+      color: var(--bad);
+      background: #fff6f5;
+      border: 1px solid rgba(180, 35, 24, .16);
+      line-height: 1.7;
+    }
 
     @media (max-width: 680px) {
       main {
@@ -248,7 +198,7 @@
         grid-template-columns: 1fr;
       }
 
-      button {
+      button, .track-link {
         width: 100%;
       }
 
@@ -266,7 +216,7 @@
 </head>
 <body>
   <header></header>
-  <main class="panel">
+  <main>
     <div class="title">快件查询</div>
 
     <section class="search">
@@ -295,6 +245,20 @@
       return names[String(code || '').toLowerCase()] || code || '快递';
     }
 
+    function kuaidi100Code(code) {
+      const codes = {
+        sto: 'shentong',
+        shentong: 'shentong'
+      };
+      return codes[String(code || '').toLowerCase()] || String(code || 'shentong').toLowerCase();
+    }
+
+    function kuaidi100Url(carrier, trackingNo) {
+      const com = encodeURIComponent(kuaidi100Code(carrier));
+      const nu = encodeURIComponent(trackingNo);
+      return `https://www.kuaidi100.com/chaxun?com=${com}&nu=${nu}`;
+    }
+
     function escapeHtml(value) {
       return String(value ?? '')
         .replaceAll('&', '&amp;')
@@ -306,27 +270,6 @@
 
     function formatWaybill(value) {
       return String(value || '').replace(/\s+/g, '').replace(/(.{4})/g, '$1 ').trim();
-    }
-
-    function renderTrace(track) {
-      if (!track || !track.available) {
-        return `<div class="empty">${escapeHtml(track?.message || '暂时没有查到物流轨迹。')}</div>`;
-      }
-
-      if (!track.traces || !track.traces.length) {
-        return '<div class="empty">快递鸟暂时没有返回详细轨迹，请稍后再查。</div>';
-      }
-
-      return `
-        <div class="timeline">
-          ${track.traces.map((item, index) => `
-            <div class="trace">
-              <div class="trace-text">${index === 0 ? '<span class="badge">新</span>' : ''}${escapeHtml(item.text)}</div>
-              <div class="trace-time">${escapeHtml(item.time)}</div>
-            </div>
-          `).join('')}
-        </div>
-      `;
     }
 
     function showResult(html) {
@@ -351,7 +294,7 @@
 
       button.disabled = true;
       button.textContent = '查询中';
-      showResult('<div class="empty">正在查询，请稍候...</div>');
+      showResult('<div class="notice">正在查询，请稍候...</div>');
 
       try {
         const response = await fetch(`/api/order?orderNo=${encodeURIComponent(orderNo)}`, {
@@ -366,21 +309,21 @@
 
         const data = payload.data;
         latestTrackingNo = data.trackingNo;
-        const firstTrace = data.track?.traces?.[0];
-        const origin = firstTrace?.location || '-';
-        const destination = data.track?.stateText === '已签收' ? '已签收' : '-';
+        const trackUrl = kuaidi100Url(data.carrier, data.trackingNo);
 
         showResult(`
           <h1 class="waybill">运单号: ${escapeHtml(formatWaybill(data.trackingNo))}</h1>
           <div class="summary">
             <div class="places">
               <div>快递公司<strong>${escapeHtml(carrierName(data.carrier))}</strong></div>
-              <div>始发地<strong>${escapeHtml(origin)}</strong></div>
-              <div>目的地<strong>${escapeHtml(destination)}</strong></div>
+              <div>订单号<strong>${escapeHtml(data.orderNo)}</strong></div>
             </div>
             <div>
-              ${renderTrace(data.track)}
-              <button class="copy" type="button" onclick="copyTrackingNo()">复制快递单号</button>
+              <div class="notice">已查到对应快递单号。点击下方按钮可打开快递100查看实时物流轨迹，不消耗本站接口额度。</div>
+              <div class="actions">
+                <button class="copy" type="button" onclick="copyTrackingNo()">复制快递单号</button>
+                <a class="track-link" href="${trackUrl}" target="_blank" rel="noopener noreferrer">查看物流轨迹</a>
+              </div>
             </div>
           </div>
         `);
