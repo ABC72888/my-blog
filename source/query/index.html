@@ -159,6 +159,11 @@
       line-height: 1.8;
     }
 
+    .notice-success {
+      border-left-color: #2f9e7e;
+      background: #edf8f3;
+    }
+
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -331,7 +336,7 @@
               <div>订单号<strong>${escapeHtml(data.orderNo)}</strong></div>
             </div>
             <div>
-              <div class="notice">已查到对应快递单号。点击下方按钮可打开申通官网查看实时物流轨迹，快递单号会自动带过去。</div>
+              <div class="notice notice-success">已查到对应快递单号。点击下方按钮可打开申通官网查看实时物流轨迹，快递单号会自动带过去。</div>
               <div class="actions">
                 <button class="copy" type="button" onclick="copyTrackingNo()">复制快递单号</button>
                 <a class="track-link" href="${trackUrl}" target="_blank" rel="noopener noreferrer">查看物流轨迹</a>
