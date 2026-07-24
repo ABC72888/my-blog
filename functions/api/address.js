@@ -115,25 +115,45 @@ export async function onRequestPost(context) {
 
   await ensureCustomerColumns(env);
 
-  await env.DB.prepare(
-    `INSERT INTO orders (
-       order_no, order_no_key, tracking_no, carrier,
-       recipient_name, recipient_phone, recipient_address, updated_at
-     )
-     VALUES (?, ?, '', 'sto', ?, ?, ?, datetime('now'))
-     ON CONFLICT(order_no_key) DO UPDATE SET
-       order_no = excluded.order_no,
-       recipient_name = excluded.recipient_name,
-       recipient_phone = excluded.recipient_phone,
-       recipient_address = excluded.recipient_address,
-       updated_at = datetime('now')`
-  ).bind(
-    item.orderNo,
-    item.orderKey,
-    item.recipientName,
-    item.recipientPhone,
-    item.recipientAddress
-  ).run();
+  const existing = await env.DB.prepare(
+    'SELECT recipient_name, recipient_phone, recipient_address FROM orders WHERE order_no_key = ? LIMIT 1'
+  ).bind(item.orderKey).first();
+
+  if (existing && (existing.recipient_name || existing.recipient_phone || existing.recipient_address)) {
+    return json({ ok: false, message: '该订单号已提交请勿重复提交。' }, 409);
+  }
+
+  if (existing) {
+    await env.DB.prepare(
+      `UPDATE orders
+       SET order_no = ?,
+           recipient_name = ?,
+           recipient_phone = ?,
+           recipient_address = ?,
+           updated_at = datetime('now')
+       WHERE order_no_key = ?`
+    ).bind(
+      item.orderNo,
+      item.recipientName,
+      item.recipientPhone,
+      item.recipientAddress,
+      item.orderKey
+    ).run();
+  } else {
+    await env.DB.prepare(
+      `INSERT INTO orders (
+         order_no, order_no_key, tracking_no, carrier,
+         recipient_name, recipient_phone, recipient_address, updated_at
+       )
+       VALUES (?, ?, '', 'sto', ?, ?, ?, datetime('now'))`
+    ).bind(
+      item.orderNo,
+      item.orderKey,
+      item.recipientName,
+      item.recipientPhone,
+      item.recipientAddress
+    ).run();
+  }
 
   return json({ ok: true, message: '提交成功，请等待发货。' });
 }
