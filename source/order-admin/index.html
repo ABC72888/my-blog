@@ -166,7 +166,8 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
-      min-width: 1060px;
+      min-width: 1240px;
+      table-layout: fixed;
     }
 
     th, td {
@@ -191,6 +192,33 @@
 
     .toolbar input { max-width: 360px; }
     .muted { color: var(--muted); }
+
+    .col-order { width: 160px; }
+    .col-status { width: 96px; }
+    .nowrap { white-space: nowrap; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 0 10px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-shipped {
+      color: #0f5132;
+      background: #d1f4dc;
+    }
+
+    .status-pending {
+      color: #9a4b00;
+      background: #ffe1bd;
+    }
 
     @media (max-width: 760px) {
       .grid { grid-template-columns: 1fr; }
@@ -277,8 +305,8 @@
         <table>
           <thead>
             <tr>
-              <th>订单号</th>
-              <th>状态</th>
+              <th class="col-order">订单号</th>
+              <th class="col-status">状态</th>
               <th>快递单号</th>
               <th>收件人</th>
               <th>手机号</th>
@@ -424,8 +452,8 @@
         const shipped = Boolean(String(item.tracking_no || '').trim());
         return `
           <tr>
-            <td>${escapeHtml(item.order_no)}</td>
-            <td>${shipped ? '已发货' : '<span class="muted">待发货</span>'}</td>
+            <td class="nowrap">${escapeHtml(item.order_no)}</td>
+            <td>${shipped ? '<span class="status-badge status-shipped">已发货</span>' : '<span class="status-badge status-pending">待发货</span>'}</td>
             <td>${escapeHtml(item.tracking_no || '')}</td>
             <td>${escapeHtml(item.recipient_name || '')}</td>
             <td>${escapeHtml(item.recipient_phone || '')}</td>
