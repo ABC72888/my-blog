@@ -22,19 +22,19 @@ categories:
 
 点开后会先提示登录你的 giffgaff 账号，登录成功后通常会自动跳转到提问/反馈页面。
 
-![giffgaff 客服工单入口](/assets/5d/step-01.png)
+![giffgaff 客服工单入口](/assets/5d/login.png)
 
 ![选择问题类型](/assets/5d/issue-type.png)
 
-![填写账号相关信息](/assets/5d/step-03.png)
+![填写账号相关信息](/assets/5d/account-info.png)
 
-![进入提问页面](/assets/5d/step-04.png)
+![进入提问页面](/assets/5d/ask-page.png)
 
-![补充问题说明](/assets/5d/step-05.png)
+![补充问题说明](/assets/5d/description.png)
 
-![确认提交内容](/assets/5d/step-06.png)
+![确认提交内容](/assets/5d/confirm.png)
 
-![提交完成页面](/assets/5d/step-07.png)
+![提交完成页面](/assets/5d/submitted.png)
 
 ## 第二步：提交英文说明
 
