@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>订单物流查询 - 海外实体卡激活教程</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --text: #172033;
+      --muted: #647084;
+      --line: #d9dee8;
+      --panel: #ffffff;
+      --soft: #f4f7fb;
+      --primary: #1677d2;
+      --primary-dark: #0d5fa8;
+      --ok: #15803d;
+      --bad: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #edf4fb 0%, #f9fafc 42%, #ffffff 100%);
+    }
+
+    header {
+      border-bottom: 1px solid rgba(23, 32, 51, .08);
+      background: rgba(255, 255, 255, .86);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav, main {
+      width: min(920px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .home {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    main {
+      padding: 44px 0 64px;
+    }
+
+    .tool {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(23, 32, 51, .1);
+      border-radius: 8px;
+      box-shadow: 0 18px 40px rgba(40, 61, 94, .08);
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(26px, 5vw, 38px);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    input {
+      width: 100%;
+      height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 14px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22, 119, 210, .14);
+    }
+
+    button {
+      align-self: end;
+      height: 46px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 22px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--primary);
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--primary-dark); }
+    button:disabled { opacity: .62; cursor: not-allowed; }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .result.show { display: block; }
+
+    .result.ok {
+      border-color: rgba(21, 128, 61, .22);
+      background: #f0fdf4;
+    }
+
+    .result.bad {
+      border-color: rgba(180, 35, 24, .22);
+      background: #fff6f5;
+    }
+
+    .status {
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .ok .status { color: var(--ok); }
+    .bad .status { color: var(--bad); }
+
+    .rows {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      line-height: 1.6;
+      word-break: break-all;
+    }
+
+    .key { color: var(--muted); }
+    .value { font-weight: 650; }
+
+    .copy {
+      margin-top: 14px;
+      height: 40px;
+      padding: 0 16px;
+      background: #1f2937;
+    }
+
+    .copy:hover { background: #111827; }
+
+    .tips {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 620px) {
+      main { padding-top: 28px; }
+      .panel { padding: 20px; }
+      form { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .row { grid-template-columns: 1fr; gap: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <a class="brand" href="/">海外实体卡激活教程</a>
+      <a class="home" href="/">返回首页</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="tool">
+      <div class="panel">
+        <h1>订单物流查询</h1>
+        <p>输入订单号后，可以查询对应的快递公司和快递单号。</p>
+
+        <form id="queryForm">
+          <div>
+            <label for="orderNo">订单号</label>
+            <input id="orderNo" name="orderNo" autocomplete="off" placeholder="请输入你的订单号" required>
+          </div>
+          <button id="submitBtn" type="submit">查询</button>
+        </form>
+
+        <div id="result" class="result" aria-live="polite"></div>
+      </div>
+
+      <div class="panel tips">
+        <p>请完整输入订单号，不要输入手机号、姓名或地址。</p>
+        <p>如果没有查到结果，可能是订单还没有录入，或订单号输入有误。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.querySelector('#queryForm');
+    const input = document.querySelector('#orderNo');
+    const button = document.querySelector('#submitBtn');
+    const result = document.querySelector('#result');
+    let latestTrackingNo = '';
+
+    function carrierName(code) {
+      const names = {
+        sto: '申通快递',
+        shentong: '申通快递'
+      };
+      return names[String(code || '').toLowerCase()] || code || '快递';
+    }
+
+    function showResult(type, html) {
+      result.className = `result show ${type}`;
+      result.innerHTML = html;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const orderNo = input.value.trim();
+      latestTrackingNo = '';
+
+      if (!orderNo) {
+        showResult('bad', '<div class="status">请输入订单号</div>');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = '查询中';
+      showResult('', '<div class="status">正在查询...</div>');
+
+      try {
+        const response = await fetch(`/api/order?orderNo=${encodeURIComponent(orderNo)}`, {
+          headers: { accept: 'application/json' }
+        });
+        const payload = await response.json();
+
+        if (!payload.ok) {
+          showResult('bad', `<div class="status">${payload.message || '没有查到结果'}</div>`);
+          return;
+        }
+
+        const data = payload.data;
+        latestTrackingNo = data.trackingNo;
+        showResult('ok', `
+          <div class="status">查询成功</div>
+          <div class="rows">
+            <div class="row"><div class="key">订单号</div><div class="value">${escapeHtml(data.orderNo)}</div></div>
+            <div class="row"><div class="key">快递公司</div><div class="value">${escapeHtml(carrierName(data.carrier))}</div></div>
+            <div class="row"><div class="key">快递单号</div><div class="value">${escapeHtml(data.trackingNo)}</div></div>
+          </div>
+          <button class="copy" type="button" onclick="copyTrackingNo()">复制快递单号</button>
+        `);
+      } catch (error) {
+        showResult('bad', '<div class="status">查询失败，请稍后再试。</div>');
+      } finally {
+        button.disabled = false;
+        button.textContent = '查询';
+      }
+    });
+
+    async function copyTrackingNo() {
+      if (!latestTrackingNo) return;
+      await navigator.clipboard.writeText(latestTrackingNo);
+      const copyButton = document.querySelector('.copy');
+      if (copyButton) {
+        copyButton.textContent = '已复制';
+        setTimeout(() => { copyButton.textContent = '复制快递单号'; }, 1200);
+      }
+    }
+  </script>
+</body>
+</html>
