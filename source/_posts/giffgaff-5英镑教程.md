@@ -24,7 +24,7 @@ categories:
 
 ![giffgaff 客服工单入口](/assets/5d/step-01.png)
 
-![选择问题类型](/assets/5d/step-02.png)
+![选择问题类型](/assets/5d/issue-type.png)
 
 ![填写账号相关信息](/assets/5d/step-03.png)
 
@@ -42,13 +42,11 @@ categories:
 
 可以参考下面这段：
 
-```text
-Hello,
+<textarea readonly rows="9" style="width: 100%; box-sizing: border-box; margin: 12px 0 18px; padding: 14px 16px; border: 1px solid #d0d7de; border-radius: 8px; background: #f6f8fa; color: #24292f; font-size: 15px; line-height: 1.65; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; resize: vertical;">Hello,
 
 Sorry to trouble you. I recently topped up £10 but haven't received the £5 bonus credit yet. Could you kindly help me look into my account to see if this offer applies to me? I might have misunderstood the requirements, so I would truly appreciate your help in clarifying this.
 
-Thank you so much for your time and assistance!
-```
+Thank you so much for your time and assistance!</textarea>
 
 建议不要完全原样复制，可以让 AI 帮你稍微改写一下，语气保持礼貌自然即可。
 
