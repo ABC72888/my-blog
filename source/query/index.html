@@ -245,18 +245,9 @@
       return names[String(code || '').toLowerCase()] || code || '快递';
     }
 
-    function kuaidi100Code(code) {
-      const codes = {
-        sto: 'shentong',
-        shentong: 'shentong'
-      };
-      return codes[String(code || '').toLowerCase()] || String(code || 'shentong').toLowerCase();
-    }
-
-    function kuaidi100Url(carrier, trackingNo) {
-      const com = encodeURIComponent(kuaidi100Code(carrier));
-      const nu = encodeURIComponent(trackingNo);
-      return `https://www.kuaidi100.com/chaxun?com=${com}&nu=${nu}`;
+    function stoTrackUrl(trackingNo) {
+      const nu = encodeURIComponent(String(trackingNo || '').replace(/\s+/g, ''));
+      return `https://www.sto.cn/pc/service-page/iframe_2_21_${nu}`;
     }
 
     function escapeHtml(value) {
@@ -309,7 +300,7 @@
 
         const data = payload.data;
         latestTrackingNo = data.trackingNo;
-        const trackUrl = kuaidi100Url(data.carrier, data.trackingNo);
+        const trackUrl = stoTrackUrl(data.trackingNo);
 
         showResult(`
           <h1 class="waybill">运单号: ${escapeHtml(formatWaybill(data.trackingNo))}</h1>
@@ -319,7 +310,7 @@
               <div>订单号<strong>${escapeHtml(data.orderNo)}</strong></div>
             </div>
             <div>
-              <div class="notice">已查到对应快递单号。点击下方按钮可打开快递100查看实时物流轨迹，不消耗本站接口额度。</div>
+              <div class="notice">已查到对应快递单号。点击下方按钮可打开申通官网查看实时物流轨迹，快递单号会自动带过去。</div>
               <div class="actions">
                 <button class="copy" type="button" onclick="copyTrackingNo()">复制快递单号</button>
                 <a class="track-link" href="${trackUrl}" target="_blank" rel="noopener noreferrer">查看物流轨迹</a>
