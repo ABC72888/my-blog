@@ -226,18 +226,14 @@ function formatTrack(payload) {
   };
 }
 
-async function fetchKdniaoTrack(env, order) {
-  if (!env.KDNIAO_EBUSINESS_ID || !env.KDNIAO_API_KEY) {
-    return { available: false, message: '快递鸟密钥还没有设置。', traces: [] };
-  }
-
+async function requestKdniao(env, order, requestType) {
   const requestData = JSON.stringify({
     OrderCode: '',
     ShipperCode: shipperCode(order.carrier),
     LogisticCode: order.tracking_no,
   });
   const params = new URLSearchParams();
-  params.set('RequestType', '1002');
+  params.set('RequestType', requestType);
   params.set('EBusinessID', env.KDNIAO_EBUSINESS_ID);
   params.set('RequestData', requestData);
   params.set('DataSign', base64(md5Hex(requestData + env.KDNIAO_API_KEY)));
@@ -251,7 +247,23 @@ async function fetchKdniaoTrack(env, order) {
     body: params.toString(),
   });
 
-  const payload = await response.json();
+  return response.json();
+}
+
+function isPackageError(payload) {
+  return String(payload?.Reason || '').includes('没有可用套餐');
+}
+
+async function fetchKdniaoTrack(env, order) {
+  if (!env.KDNIAO_EBUSINESS_ID || !env.KDNIAO_API_KEY) {
+    return { available: false, message: '快递鸟密钥还没有设置。', traces: [] };
+  }
+
+  let payload = await requestKdniao(env, order, '8002');
+  if (isPackageError(payload)) {
+    payload = await requestKdniao(env, order, '1002');
+  }
+
   const track = formatTrack(payload);
   return {
     available: track.success,
