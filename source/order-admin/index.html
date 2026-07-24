@@ -268,7 +268,7 @@
     </section>
 
     <section class="panel">
-      <h2>最近订单</h2>
+      <h2>所有订单</h2>
       <div class="toolbar">
         <input id="search" autocomplete="off" placeholder="搜索订单号">
         <button type="button" onclick="loadOrders()">查询</button>
@@ -403,7 +403,7 @@
       }
 
       const q = document.querySelector('#search').value.trim();
-      const response = await fetch(`/api/admin/orders?q=${encodeURIComponent(q)}`, {
+      const response = await fetch(`/api/admin/orders?q=${encodeURIComponent(q)}&limit=1000`, {
         headers: { authorization: `Bearer ${token()}` }
       });
       const payload = await response.json();

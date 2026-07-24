@@ -97,7 +97,7 @@ export async function onRequestGet(context) {
 
   const url = new URL(request.url);
   const q = normalizeOrderNo(url.searchParams.get('q') || '');
-  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 50), 1), 100);
+  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || 1000), 1), 1000);
 
   const stmt = q
     ? env.DB.prepare(
