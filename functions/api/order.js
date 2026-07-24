@@ -1,4 +1,4 @@
-const MAX_ORDER_LENGTH = 80;
+const ORDER_PATTERN = /^LD[A-Z0-9]{12}$/;
 const RATE_LIMIT_WINDOW_SECONDS = 60;
 const RATE_LIMIT_MAX_REQUESTS = 30;
 
@@ -53,8 +53,8 @@ export async function onRequestGet(context) {
     return json({ ok: false, message: '请输入订单号。' }, 400);
   }
 
-  if (orderKey.length > MAX_ORDER_LENGTH) {
-    return json({ ok: false, message: '订单号太长，请检查后重新输入。' }, 400);
+  if (!ORDER_PATTERN.test(orderKey)) {
+    return json({ ok: false, message: '订单号格式不正确，必须是 LD 开头的 14 位订单号。' }, 400);
   }
 
   const limit = await checkRateLimit(env, request);

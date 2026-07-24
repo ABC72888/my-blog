@@ -1,4 +1,4 @@
-const MAX_ORDER_LENGTH = 80;
+const ORDER_PATTERN = /^LD[A-Z0-9]{12}$/;
 const MAX_NAME_LENGTH = 50;
 const MAX_PHONE_LENGTH = 30;
 const MAX_ADDRESS_LENGTH = 500;
@@ -76,10 +76,10 @@ function validate(input) {
   const recipientAddress = String(input.recipientAddress || '').trim();
 
   if (!orderKey) return { ok: false, message: '请输入订单号。' };
+  if (!ORDER_PATTERN.test(orderKey)) return { ok: false, message: '订单号格式不正确，必须是 LD 开头的 14 位订单号。' };
   if (!recipientName) return { ok: false, message: '请输入收件人。' };
   if (!recipientPhone) return { ok: false, message: '请输入手机号。' };
   if (!recipientAddress) return { ok: false, message: '请输入收货地址。' };
-  if (orderKey.length > MAX_ORDER_LENGTH) return { ok: false, message: '订单号太长。' };
   if (recipientName.length > MAX_NAME_LENGTH) return { ok: false, message: '收件人太长。' };
   if (recipientPhone.length > MAX_PHONE_LENGTH) return { ok: false, message: '手机号太长。' };
   if (recipientAddress.length > MAX_ADDRESS_LENGTH) return { ok: false, message: '收货地址太长。' };

@@ -221,7 +221,7 @@
 
     <section class="search">
       <form id="queryForm">
-        <input id="orderNo" name="orderNo" autocomplete="off" placeholder="请输入订单号" required>
+        <input id="orderNo" name="orderNo" autocomplete="off" placeholder="例如 LD260724OCOUVM" maxlength="14" pattern="LD[A-Za-z0-9]{12}" required>
         <button id="submitBtn" type="submit">点击查询</button>
       </form>
       <div class="recent">最近查询记录：</div>
@@ -275,11 +275,16 @@
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const orderNo = input.value.trim();
+      const orderNo = input.value.trim().replace(/\s+/g, '').toUpperCase();
       latestTrackingNo = '';
 
       if (!orderNo) {
         showError('请输入订单号。');
+        return;
+      }
+
+      if (!/^LD[A-Z0-9]{12}$/.test(orderNo)) {
+        showError('订单号格式不正确，必须是 LD 开头的 14 位订单号，例如 LD260724OCOUVM。');
         return;
       }
 

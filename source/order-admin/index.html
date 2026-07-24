@@ -231,7 +231,7 @@
       <div class="grid">
         <div>
           <label for="orderNo">订单号</label>
-          <input id="orderNo" autocomplete="off" placeholder="例如 A202607240001">
+          <input id="orderNo" autocomplete="off" placeholder="例如 LD260724OCOUVM" maxlength="14" pattern="LD[A-Za-z0-9]{12}">
         </div>
         <div>
           <label for="trackingNo">快递单号</label>
@@ -369,7 +369,7 @@
 
     async function saveOrder() {
       const body = {
-        orderNo: document.querySelector('#orderNo').value.trim(),
+        orderNo: document.querySelector('#orderNo').value.trim().replace(/\s+/g, '').toUpperCase(),
         trackingNo: document.querySelector('#trackingNo').value.trim(),
         carrier: document.querySelector('#carrier').value,
         recipientName: document.querySelector('#recipientName').value.trim(),
@@ -380,6 +380,7 @@
 
       if (!token()) return showMessage('bad', '请先输入管理密码。');
       if (!body.orderNo) return showMessage('bad', '订单号要填写。');
+      if (!/^LD[A-Z0-9]{12}$/.test(body.orderNo)) return showMessage('bad', '订单号格式不正确，必须是 LD 开头的 14 位订单号，例如 LD260724OCOUVM。');
 
       const response = await fetch('/api/admin/orders', {
         method: 'POST',

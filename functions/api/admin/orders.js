@@ -1,4 +1,4 @@
-const MAX_ORDER_LENGTH = 80;
+const ORDER_PATTERN = /^LD[A-Z0-9]{12}$/;
 const MAX_TRACKING_LENGTH = 80;
 
 function json(data, status = 200) {
@@ -70,7 +70,7 @@ function validateOrder(input) {
   const orderKey = normalizeOrderNo(orderNo);
 
   if (!orderKey) return { ok: false, message: '订单号不能为空。' };
-  if (orderKey.length > MAX_ORDER_LENGTH) return { ok: false, message: '订单号太长。' };
+  if (!ORDER_PATTERN.test(orderKey)) return { ok: false, message: '订单号格式不正确，必须是 LD 开头的 14 位订单号。' };
   if (trackingNo.length > MAX_TRACKING_LENGTH) return { ok: false, message: '快递单号太长。' };
 
   return {

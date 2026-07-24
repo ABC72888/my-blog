@@ -178,7 +178,7 @@
       <form id="addressForm">
         <div>
           <label for="orderNo">订单号</label>
-          <input id="orderNo" autocomplete="off" placeholder="请输入你的订单号" required>
+          <input id="orderNo" autocomplete="off" placeholder="例如 LD260724OCOUVM" maxlength="14" pattern="LD[A-Za-z0-9]{12}" required>
         </div>
         <div>
           <label for="recipientName">收件人</label>
@@ -223,8 +223,15 @@
         recipientAddress: document.querySelector('#recipientAddress').value.trim(),
       };
 
+      body.orderNo = body.orderNo.replace(/\s+/g, '').toUpperCase();
+
       if (!body.orderNo || !body.recipientName || !body.recipientPhone || !body.recipientAddress) {
         showMessage('bad', '请把订单号、收件人、手机号和收货地址填写完整。');
+        return;
+      }
+
+      if (!/^LD[A-Z0-9]{12}$/.test(body.orderNo)) {
+        showMessage('bad', '订单号格式不正确，必须是 LD 开头的 14 位订单号，例如 LD260724OCOUVM。');
         return;
       }
 
