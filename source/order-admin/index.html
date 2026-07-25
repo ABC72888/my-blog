@@ -220,6 +220,44 @@
       background: #ffe1bd;
     }
 
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .stat-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .stat-card strong {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .stat-card .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .stat-card .dot.shipped { background: #15803d; }
+    .stat-card .dot.pending { background: #f06a00; }
+    .stat-card .dot.total { background: #1677d2; }
+
     @media (max-width: 760px) {
       .grid { grid-template-columns: 1fr; }
       .toolbar { flex-direction: column; }
@@ -297,6 +335,7 @@
 
     <section class="panel">
       <h2>所有订单</h2>
+      <div class="stats" id="stats" aria-live="polite"></div>
       <div class="toolbar">
         <input id="search" autocomplete="off" placeholder="搜索订单号">
         <button type="button" onclick="loadOrders()">查询</button>
@@ -427,6 +466,7 @@
     async function loadOrders() {
       if (!token()) {
         ordersBody.innerHTML = '<tr><td colspan="9">请先输入管理密码。</td></tr>';
+        updateStats([]);
         return;
       }
 
@@ -438,6 +478,7 @@
 
       if (!payload.ok) {
         ordersBody.innerHTML = `<tr><td colspan="9">${escapeHtml(payload.message || '读取失败。')}</td></tr>`;
+        updateStats([]);
         return;
       }
 
@@ -445,8 +486,11 @@
 
       if (!latestOrders.length) {
         ordersBody.innerHTML = '<tr><td colspan="9">暂无订单。</td></tr>';
+        updateStats([]);
         return;
       }
+
+      updateStats(latestOrders);
 
       ordersBody.innerHTML = latestOrders.map((item, index) => {
         const shipped = Boolean(String(item.tracking_no || '').trim());
@@ -467,6 +511,25 @@
           </tr>
         `;
       }).join('');
+    }
+
+    function updateStats(orders) {
+      const stats = document.querySelector('#stats');
+      let shipped = 0;
+      let pending = 0;
+      for (const item of orders) {
+        if (Boolean(String(item.tracking_no || '').trim())) {
+          shipped += 1;
+        } else {
+          pending += 1;
+        }
+      }
+      const total = shipped + pending;
+      stats.innerHTML = `
+        <div class="stat-card"><span class="dot total"></span>总计<strong>${total}</strong></div>
+        <div class="stat-card"><span class="dot shipped"></span>已发货<strong>${shipped}</strong></div>
+        <div class="stat-card"><span class="dot pending"></span>待发货<strong>${pending}</strong></div>
+      `;
     }
 
     async function deleteOrder(encodedOrderNo) {
