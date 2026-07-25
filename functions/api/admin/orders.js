@@ -142,7 +142,7 @@ export async function onRequestPost(context) {
        order_no, order_no_key, tracking_no, carrier,
        recipient_name, recipient_phone, recipient_address, note, updated_at
      )
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now', '+8 hours'))
      ON CONFLICT(order_no_key) DO UPDATE SET
        order_no = excluded.order_no,
        tracking_no = excluded.tracking_no,
@@ -151,7 +151,7 @@ export async function onRequestPost(context) {
        recipient_phone = excluded.recipient_phone,
        recipient_address = excluded.recipient_address,
        note = excluded.note,
-       updated_at = datetime('now')`
+       updated_at = datetime('now', '+8 hours')`
   ).bind(
     item.orderNo,
     item.orderKey,

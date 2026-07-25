@@ -129,9 +129,9 @@ export async function onRequestPost(context) {
        SET order_no = ?,
            recipient_name = ?,
            recipient_phone = ?,
-           recipient_address = ?,
-           updated_at = datetime('now')
-       WHERE order_no_key = ?`
+      recipient_address = ?,
+      updated_at = datetime('now', '+8 hours')
+      WHERE order_no_key = ?`
     ).bind(
       item.orderNo,
       item.recipientName,
@@ -143,10 +143,10 @@ export async function onRequestPost(context) {
     await env.DB.prepare(
       `INSERT INTO orders (
          order_no, order_no_key, tracking_no, carrier,
-         recipient_name, recipient_phone, recipient_address, updated_at
-       )
-       VALUES (?, ?, '', 'sto', ?, ?, ?, datetime('now'))`
-    ).bind(
+      recipient_name, recipient_phone, recipient_address, updated_at
+    )
+    VALUES (?, ?, '', 'sto', ?, ?, ?, datetime('now', '+8 hours'))`
+  ).bind(
       item.orderNo,
       item.orderKey,
       item.recipientName,

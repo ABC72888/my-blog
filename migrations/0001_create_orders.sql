@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS orders (
   tracking_no TEXT NOT NULL,
   carrier TEXT NOT NULL DEFAULT 'sto',
   note TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at TEXT NOT NULL DEFAULT (datetime('now', '+8 hours')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now', '+8 hours'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_order_no_key ON orders(order_no_key);
