@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
@@ -161,14 +161,25 @@
     }
 
     .shipping-warn {
+      position: relative;
       margin-top: 4px;
-      padding: 12px 14px;
-      border: 1px solid #f5c2c0;
-      border-radius: 6px;
+      padding: 14px 18px;
+      border: 1px dashed #f5c2c0;
+      border-radius: 8px;
       background: #fff5f5;
       color: #b42318;
       font-size: 14px;
       line-height: 1.7;
+    }
+
+    .warn-qr {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 72px;
+      height: 72px;
+      border-radius: 4px;
+      object-fit: cover;
     }
 
     .shipping-warn strong {
@@ -179,6 +190,15 @@
       main { padding-top: 26px; }
       .panel { padding: 20px; }
       button { width: 100%; }
+      .warn-qr {
+        position: relative;
+        display: block;
+        margin: 0 auto 10px;
+      }
+      .shipping-warn {
+        text-align: center;
+        padding: 16px 14px;
+      }
     }
   </style>
 </head>
@@ -213,7 +233,8 @@
           <textarea id="recipientAddress" autocomplete="street-address" placeholder="省/市/区/详细地址" required></textarea>
         </div>
         <div class="shipping-warn" role="note">
-          <strong>偏远地区提醒：</strong>新疆、西藏，偏远地区，请联系客服补 10 元运费才能发货！客服QQ：<strong>728885397</strong>。
+          <img class="warn-qr" src="/assets/channel-qr.jpg" alt="频道二维码" width="72" height="72">
+          <strong>偏远地区提醒：</strong>新疆、西藏，请联系客服补 10 元运费才能发货！这几天qq微信加的太频繁了，扫描上面频道进入私聊客服大爷。
         </div>
 
         <button id="submitBtn" type="submit">提交地址</button>
@@ -234,7 +255,7 @@
     const message = document.querySelector('#message');
 
     function showMessage(type, text) {
-      message.className = `message show ${type}`;
+      message.className = 'message show ' + type;
       message.textContent = text;
     }
 
