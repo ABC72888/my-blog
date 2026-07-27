@@ -160,9 +160,25 @@
       color: #44546a;
     }
 
-    .shipping-warn {
+    .warn-row { width: 100%; margin-top: 4px;
       position: relative;
-      margin-top: 4px;
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .warn-qr {
+      align-self: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .shipping-warn {
+      flex: 1;
+      display: flex;
+      align-items: center;
       padding: 14px 18px;
       border: 1px dashed #f5c2c0;
       border-radius: 8px;
@@ -171,17 +187,6 @@
       font-size: 14px;
       line-height: 1.7;
     }
-
-    .warn-qr {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 72px;
-      height: 72px;
-      border-radius: 4px;
-      object-fit: cover;
-    }
-
     .shipping-warn strong {
       color: #b42318;
     }
@@ -190,14 +195,20 @@
       main { padding-top: 26px; }
       .panel { padding: 20px; }
       button { width: 100%; }
+      .warn-row { width: 100%; margin-top: 4px;
+        flex-direction: column;
+        align-items: center;
+      }
       .warn-qr {
-        position: relative;
-        display: block;
-        margin: 0 auto 10px;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 10px;
       }
       .shipping-warn {
-        text-align: center;
+        width: 100%;
         padding: 16px 14px;
+        text-align: center;
+        justify-content: center;
       }
     }
   </style>
@@ -232,9 +243,11 @@
           <label for="recipientAddress">收货地址</label>
           <textarea id="recipientAddress" autocomplete="street-address" placeholder="省/市/区/详细地址" required></textarea>
         </div>
-        <div class="shipping-warn" role="note">
+        <div class="warn-row">
           <img class="warn-qr" src="/assets/channel-qr.jpg" alt="频道二维码" width="72" height="72">
-          <strong>偏远地区提醒：</strong>新疆、西藏，请联系客服补 10 元运费才能发货！这几天qq微信加的太频繁了，扫描上面频道进入私聊客服大爷。
+          <div class="shipping-warn" role="note">
+            <strong>偏远地区提醒：</strong>新疆、西藏，请联系客服补 10 元运费才能发货！这几天qq微信加的太频繁了，扫描上面频道进入私聊客服大爷。
+          </div>
         </div>
 
         <button id="submitBtn" type="submit">提交地址</button>
@@ -304,3 +317,7 @@
   </script>
 </body>
 </html>
+
+
+
+
